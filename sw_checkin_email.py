@@ -201,6 +201,7 @@ class HTMLSouthwestParser(HTMLParser):
     self.formaction = ""
     self.is_search = False
     self.textnames = []
+    self.inform = False
 
   # override the feed function to reset our parameters
   # and then call the original feed function
@@ -208,9 +209,22 @@ class HTMLSouthwestParser(HTMLParser):
     self._reset()
     HTMLParser.feed(self, formdata)
 
+  def handle_endtag(self, tag):
+    if tag=="form":
+      self.inform = False
+
   # handle tags in web pages
   # this is where the real magic is done
   def handle_starttag(self, tag, attrs):
+    if tag=="form":
+      for attr in attrs:
+        if attr[0]=="id":
+          if attr[1]=="itineraryLookup":
+            self.inform = True
+
+    if not self.inform:
+        return
+
     if tag=="input":
       ishidden = False
       ischeckbox = False
