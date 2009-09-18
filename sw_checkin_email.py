@@ -270,6 +270,68 @@ class HTMLSouthwestParser(HTMLParser):
             self.formaction = theaction
             self.is_search = False
 
+# this is a parser for the Southwest pages
+class HTMLSouthwestReservationParser(HTMLParser):
+
+  def __init__(self, swdata):
+    self._reset()
+    HTMLParser.__init__(self)
+
+    # if a web page string is passed, feed it
+    if swdata != None and len(swdata)>0:
+      self.feed(swdata)
+      self.close()
+
+  def _reset(self):
+    self.flight = Flight()
+    self.inCalDate = -1 
+    self.inFlightRouting = -1 
+    self.tdStack = 0
+
+  # override the feed function to reset our parameters
+  # and then call the original feed function
+  def feed(self, formdata):
+    self._reset()
+    HTMLParser.feed(self, formdata)
+
+  def handle_endtag(self, tag):
+    if self.inCalDate == self.tdStack:
+        self.inCalDate = -1
+    if self.inFlightRouting == self.tdStack:
+        self.inFlightRouting = -1
+
+    if tag=="td":
+        self.tdStack--
+    
+
+  # handle tags in web pages
+  # this is where the real magic is done
+  def handle_starttag(self, tag, attrs):
+    if tag=="td":
+        self.tdStack++
+
+    for attr in attrs:
+        if attr[0]=="class":
+            if attr[1]=="priceDataHeader calDate":
+                self.inCalDate=self.tdStack
+            if attr[1]=="flightRouting":
+                self.inFlightRouting=self.tdStack
+
+    if self.inCalDate != -1:
+        if tag=="div":
+            for attr in attrs:
+                if attr[0]=="class":
+                    if attr[1]=="month":
+
+                        # XXX: stopped here. Just realized that grabbing the contents inside a tag is difficult with HTMLParser
+
+                        self.flight.month=
+                    elif attr[1]=="day":
+                        
+
+
+    if self.inFlightRouting != -1:
+        
 
 def WriteFile(filename, data):
   fd = open(filename, "w")
