@@ -39,6 +39,7 @@ import httplib
 import smtplib
 import getpass
 from HTMLParser import HTMLParser
+from BeautifulSoup import BeautifulSoup
 
 from datetime import datetime,date,timedelta,time
 from pytz import timezone,utc
@@ -50,7 +51,7 @@ RETRY_INTERVAL = 5
 CHECKIN_WINDOW = 3*60
 
 # Email confuration
-should_send_email = True
+should_send_email = False
 email_from = None
 email_to = None
 
@@ -164,7 +165,7 @@ airport_timezone_map = {
 
 # ========================================================================
 
-verbose = False
+verbose = True
 def dlog(str):
   if verbose:
     print "DEBUG: %s" % str
@@ -335,6 +336,20 @@ def setInputBoxes(textnames, conf_number, first_name, last_name):
 
   return params
 
+def getFlightNumber(routingSoup):
+  fnSep = routingSoup.findAll('td', attrs={"class" : "flightNumberSeparator "})
+  return fnSep[0].string[1:]
+
+def getFlightAirportCode(routingSoup):
+  details = routingSoup.findAll('td', attrs={"class" : "routingDetailsStops "})
+  airportCodeRegex = re.compile('^.*\((\w+)\).*')
+  airportCodeMatch = airportCodeRegex.match(str(details[0]))
+  return airportCodeMatch.group(1)
+
+def getFlightTimeOfDayString(routingSoup):
+  details = routingSoup.findAll('td', attrs={"class" : "routingDetailsTimes "})
+  return str(details[0].contents[1].string)
+
 # this routine extracts the departure date and time
 def getFlightTimes(the_url, res):
   if DEBUG_SCH > 1:
@@ -359,17 +374,39 @@ def getFlightTimes(the_url, res):
 
   # submit the request to pull up the reservations on this confirmation number
   if DEBUG_SCH > 1:
-    reservations = ReadFile("Southwest Airlines - Schedule.htm")
+    reservations = ReadFile("flightTime.htm")
   else:
     reservations = PostUrl(main_url, post_url, params)
 
   if reservations == None or len(reservations) == 0:
     print "Error: no data returned from ", main_url + post_url
-    print "Params = ", dparams
+    print "Params = ", params
     sys.exit(1)
 
   current_pos = 0
   res.flights = []
+
+  #dlog(reservations)
+
+  flight = Flight(res)
+
+  rSoup = BeautifulSoup(reservations)
+  flightDetails = rSoup.findAll('td', attrs={"class" : "flightInfoDetails"})
+  flightRouting = rSoup.findAll('td', attrs={"class" : "flightRouting"})
+
+  awayFlightDetails = flightDetails[0]
+  returnFlightDetails = flightDetails[-1]
+  awayFlightRouting = flightRouting[0]
+  returnFlightRouting = flightRouting[-1]
+
+  awayDateStr = awayFlightDetails.findAll('span', attrs={"class" : "travelDateTime"})
+  awayDateTime = getFlightTimeOfDayString(awayFlightRouting)
+  awayDate = datetime(*time_module.strptime(awayDateStr[0].string + " " + awayDateTime, "%A, %B %d, %Y %I:%M %p")[0:5])
+
+  print "Date: %s %s (%s)" % (awayDateStr[0].string, awayDateTime, DateTimeToString(awayDate))
+
+  return
+
 
   # Find all of the flights listed on the page
   while True:
@@ -504,7 +541,7 @@ def getBoardingPass(the_url, res):
     return None
 
 def DateTimeToString(time):
-  return time.strftime("%I:%M%p %b %d %y %Z");
+  return time.strftime("%I:%M%p %b %d %Y %Z");
 
 # print some information to the terminal for confirmation purposes
 def getFlightInfo(res, flights):
@@ -572,8 +609,39 @@ Subject: %s
     print "Error sending email!"
     print sys.exc_info()[1]
 
+def unitTest():
+  soup = BeautifulSoup('<tr class="tableRowOdd">\
+                <td class="flightNumberSeparator ">#1476</td>\
+                <td class="routingDetailsStops ">\
+                Depart <strong>San Jose, CA (SJC)</strong>\
+                <br/>\
+                <div class="stopInfo">\
+                        Stops in\
+                            Las Vegas, NV\
+                </div>\
+                </td>\
+                <td class="routingDetailsTimes ">\
+                <strong>11:15 AM</strong>\
+                </td>\
+            </tr>\
+            <tr class="tableRowOdd">\
+                <td class="flightNumberSeparator">&nbsp;</td>\
+                <td class="routingDetailsStops">\
+                    Arrive in <strong>Tulsa, OK (TUL)</strong>\
+                </td>\
+                <td class="routingDetailsTimes" style="vertical-align:bottom">\
+                    <strong>5:55 PM</strong>\
+                </td>\
+            </tr>\
+')
+  print "Airport code: %s" % getFlightAirportCode(soup)
+  print "Flight number: %s" % getFlightNumber(soup)
+  print "Flight time: %s" % getFlightTimeOfDayString(soup)
+  return
+
 # main program
 def main():
+
   if (len(sys.argv) - 1) % 3 != 0 or len(sys.argv) < 4:
     print "Please provide name and confirmation code:"
     print "   %s (<firstname> <lastname> <confirmation code>)+" % sys.argv[0]
