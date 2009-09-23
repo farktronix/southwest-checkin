@@ -47,17 +47,17 @@ import urllib2
 import httplib
 import smtplib
 import getpass
-from HTMLParser import HTMLParser
 from BeautifulSoup import BeautifulSoup
 
 from datetime import datetime,date,timedelta,time
 from pytz import timezone,utc
+import calendar
 
 # If we are unable to check in, how soon should we retry?
 RETRY_INTERVAL = 5
 
-# How soon before the designated time should we try to check in?
-CHECKIN_WINDOW = 3*60
+# How many minutes before the designated time should we try to check in?
+CHECKIN_WINDOW = 3
 
 # Email confuration
 should_send_email = False
@@ -208,102 +208,12 @@ class Flight(object):
     self.arrive_airport = None
     self.arrive_time = time()
 
-# TODO: Move this to BeautifulSoup
-# this is a parser for the Southwest pages
-class HTMLSouthwestParser(HTMLParser):
-
-  def __init__(self, swdata):
-    self._reset()
-    HTMLParser.__init__(self)
-
-    # if a web page string is passed, feed it
-    if swdata != None and len(swdata)>0:
-      self.feed(swdata)
-      self.close()
-
-  def _reset(self):
-    self.hiddentags = {}
-    self.searchaction = ""
-    self.formaction = ""
-    self.is_search = False
-    self.textnames = []
-    self.inform = False
-
-  # override the feed function to reset our parameters
-  # and then call the original feed function
-  def feed(self, formdata):
-    self._reset()
-    HTMLParser.feed(self, formdata)
-
-  def handle_endtag(self, tag):
-    if tag=="form":
-      self.inform = False
-
-  # handle tags in web pages
-  # this is where the real magic is done
-  def handle_starttag(self, tag, attrs):
-    if tag=="form":
-      for attr in attrs:
-        if attr[0]=="id":
-          if attr[1]=="itineraryLookup":
-            self.inform = True
-
-    if not self.inform:
-        return
-
-    if tag=="input":
-      ishidden = False
-      ischeckbox = False
-      istext = False
-      issubmit = False
-      thevalue = ""
-      thename = None
-      for attr in attrs:
-        if attr[0]=="type":
-          if attr[1]=="hidden":
-            ishidden= True
-          elif attr[1]=="checkbox" or attr[1]=="radio":
-            ischeckbox = True
-          elif attr[1]=="text":
-            istext = True
-          elif attr[1]=="submit":
-            issubmit = True
-        elif attr[0]=="name":
-          thename= attr[1]
-          istext = True
-        elif attr[0]=="value":
-          thevalue= attr[1]
-
-      # store the tag for search forms separately
-      # from the tags for non-search forms
-      if (ishidden or ischeckbox) and not self.is_search:
-        self.hiddentags.setdefault(thename, []).append(thevalue)
-
-      # otherwise, append the name of the text fields
-      elif istext and not self.is_search and not issubmit:
-        self.textnames.append(thename)
-
-    elif tag=="form":
-      for attr in attrs:
-        if attr[0]=="action":
-          theaction = attr[1]
-
-          # check to see if this is a search form
-          if theaction.find("search") > 0:
-            self.searchaction = theaction
-            self.is_search = True
-          else:
-            self.formaction = theaction
-            self.is_search = False
-
-
 
 # ========================================================================
 # Utility Functions
 
 def DateTimeToString(time):
   return time.strftime("%I:%M%p %b %d %Y %Z");
-
 
 def WriteFile(filename, data):
   fd = open(filename, "w")
@@ -357,18 +267,61 @@ def PostUrl(host, path, dparams):
 
   return wdata
 
-def setInputBoxes(textnames, conf_number, first_name, last_name):
-  if len(textnames) == 3:
-    boxes = textnames
-  else:
-    boxes = defaultboxes
+def flightInfoMessage(res):
+  message = ""
+  message += "Confirmation number: %s\r\n" % res.confcode
+  message += "Passenger name: %s %s\r\n" % (res.first_name, res.last_name)
 
-  params = {}
-  params[boxes[0]] = conf_number
-  params[boxes[1]] = first_name
-  params[boxes[2]] = last_name
+  message += "Departing Flight:\n"
+  for (i, flight) in enumerate(res.trip.awayFlights):
+    message += "Flight %d:\n  Departs: %s @ %s\n" \
+          % (flight.number, flight.depart_airport,
+             DateTimeToString(flight.depart_time))
 
-  return params
+  message += "\nReturning Flight:\n"
+  for (i, flight) in enumerate(res.trip.returnFlights):
+    message += "Flight %d:\n  Departs: %s @ %s\n" \
+          % (flight.number, flight.depart_airport,
+             DateTimeToString(flight.depart_time))
+  return message
+
+def displayFlightInfo(res):
+   print flightInfoMessage(res)
+
+# ========================================================================
+# Email
+
+def send_email(subject, message):
+  if not should_send_email:
+    return
+  
+  try:
+    smtp = smtplib.SMTP(smtp_server, 587)
+    smtp.ehlo()
+    if smtp_use_tls:
+      smtp.starttls()
+      smtp.ehlo()
+    if smtp_auth:
+      smtp.login(smtp_user, smtp_password)
+    print "sending mail"
+    for to in [string.strip(s) for s in string.split(email_to, ",")]:
+      smtp.sendmail(email_from, email_to, """From: %s
+To: %s
+Subject: %s
+
+%s
+""" % (email_from, email_to, subject, message));
+    print "EMail sent successfully."
+    smtp.close()
+  except:
+    print "Error sending email!"
+    print sys.exc_info()[1]
+
+def emailFlightInfo(res):
+  if not should_send_email:
+    return
+  message = getFlightInfo(res)
+  send_email("Waiting for SW flight", message);
 
 
 # ========================================================================
@@ -428,32 +381,34 @@ def getTripFromItinerary(itinerarySoup):
   trip = Trip([awayFlight], [returnFlight])
   return trip
 
-def getFlightItineraryHTMLParser():
-  itineraryData = ReadUrl(main_url, itinerary_url)
+def getFlightItineraryURLFromData(itineraryData):
+  soup = BeautifulSoup(itineraryData)
+  if soup == None:
+    print "Error: Could not parse data from ", main_url+itinerary_url
+    return None
 
-  if itineraryData == None or len(itineraryData) == 0:
+  itineraryForm = soup.findAll('form', id="itineraryLookup")
+  if itineraryForm == None:
+    print "Error: Could not find the itinerary lookup form"
+    return None
+
+  return itineraryForm[0]['action']
+
+def getFlightItineraryURL(reservation):
+  itinerarydata = ReadUrl(main_url, itinerary_url)
+
+  if itinerarydata == None or len(itinerarydata) == 0:
     print "Error: no data returned from ", main_url+itinerary_url
     return None
 
-  return HTMLSouthwestParser(itineraryData)
-
-def getFlightItinerary(reservation):
-  gh = getFlightItineraryHTMLParser()
-
-  if gh == None:
-    print "Error: Could not get a HTML parser for the itinerary page"
+  post_url = getFlightItineraryURLFromData(itinerarydata)
+  if post_url == None:
     return None
   
-  # get the post action name from the parser
-  post_url = gh.formaction
-  if post_url == None or post_url == "":
-    print "Error: no POST action found in ", main_url + the_url
-    return None
+  return (main_url, post_url, {"confirmationNumber" : reservation.confcode, "firstName" : reservation.first_name, "lastName" : reservation.last_name})
 
-  # load the parameters into the text boxes
-  params = setInputBoxes(gh.textnames, reservation.confcode, reservation.first_name, reservation.last_name)
-
-  return PostUrl(main_url, post_url, params)
+def getFlightItinerary(reservation):
+  return PostUrl(*getFlightItineraryURL(reservation))
 
 def addTripInfoToReservation(reservation):
   itinerary = getFlightItinerary(reservation) 
@@ -472,45 +427,58 @@ def addTripInfoToReservation(reservation):
 
 
 # ========================================================================
-# Boarding pass parsing
+# Flight Checkin 
 
-def getBoardingPass(the_url, res):
-  # read the southwest checkin web site
-  if DEBUG_SCH > 1:
-    swdata = ReadFile("Southwest Airlines - Check In and Print Boarding Pass.htm")
-  else:
-    swdata = ReadUrl(main_url, the_url)
+def getCheckinPostURLFromData(checkinData):
+  soup = BeautifulSoup(checkinData)
+  if soup == None:
+    print "Error: could not parse checkin data"
+    return None
 
-  if swdata==None or len(swdata)==0:
-    print "Error: no data returned from ", main_url+the_url
-    sys.exit(1)
+  # The checkin form doesn't have an id, so we need to narrow down our search
+  mainContent = soup.findAll('div', id='mainContentWrapper')
+  if mainContent == None:
+    print "Error: Couldn't find the main checkin content"
+    return None
+   
+  form = mainContent[0].findAll('form')
+  if form == None:
+     print "Error: Couldn't find the checkin form"
+     return None
 
-  # parse the data
-  gh = HTMLSouthwestParser(swdata)
+  return form[0]['action']
 
-  # get the post action name from the parser
-  post_url = gh.formaction
-  if post_url==None or post_url=="":
-    print "Error: no POST action found in ", main_url+the_url
-    sys.exit(1)
+def getCheckinPostURL(reservation):
+  checkinData = ReadUrl(main_url, checkin_url)
 
-  # load the parameters into the text boxes by name
-  # where the names are obtained from the parser
-  params = setInputBoxes(gh.textnames, res.confcode, res.first_name, res.last_name)
+  if checkinData == None or len(checkinData) == 0:
+    print "error: no data returned from ", main_url+checkin_url
+    return None
 
-  # submit the request to pull up the reservations
-  if DEBUG_SCH > 1:
-    reservations = ReadFile("Southwest Airlines - Print Boarding Pass.htm")
-  else:
-    reservations = PostUrl(main_url, post_url, params)
+  post_url = getCheckinPostURLFromData(checkinData)
+  if post_url == None:
+    return None
+  
+  return (main_url, post_url, {"recordLocator" : reservation.confcode, "firstName" : reservation.first_name, "lastName" : reservation.last_name})
 
-  if reservations==None or len(reservations)==0:
-    print "Error: no data returned from ", main_url+post_url
-    print "Params = ", params
-    sys.exit(1)
+def checkinForFlight(reservation):
+  return PostUrl(*getCheckinPostURL(reservation))
+
+def getBoardingPass(reservation):
+  checkinResult = checkinForFlight(reservation)
+
+  checkinSoup = BeautifulSoup(checkinResult)
+  if checkinSoup == None:
+    print "Error: Could not parse response from checkin"
+    return -1
+ 
+  title = str(checkinSoup.html.head.title.contents[0].string)
+  if title == "Error":
+    print "Could not check in at this time"
+    return -2
 
   # parse the returned reservations page
-  rh = HTMLSouthwestParser(reservations)
+  rh = HTMLSouthwestParser(checkinResult)
 
   # Extract the name of the post function to check into the flight
   final_url = rh.formaction
@@ -550,29 +518,12 @@ def getBoardingPass(the_url, res):
 
 
 # print some information to the terminal for confirmation purposes
-def getFlightInfo(res, flights):
-  message = ""
-  message += "Confirmation number: %s\r\n" % res.confcode
-  message += "Passenger name: %s %s\r\n" % (res.first_name, res.last_name)
-
-  for (i, flight) in enumerate(flights):
-    message += "Flight %d:\n  Departs: %s @ %s\n" \
-          % (flight.number, flight.depart_airport,
-             DateTimeToString(flight.depart_time))
-  return message
-
-def displayFlightInfo(res, flights, do_send_email=False):
-  message = getFlightInfo(res, flights)
-  print message
-  if do_send_email:
-    send_email("Waiting for SW flight", message);
-
 def TryCheckinFlight(res, flight, sch, attempt):
   print "-="*30
   print "Trying to checkin flight at %s" % DateTimeToString(datetime.now(utc))
   print "Attempt #%s" % attempt
-  displayFlightInfo(res, [flight])
-  position = getBoardingPass(checkin_url, res)
+  #emailFlightInfo(res)
+  position = getBoardingPass(res)
   if position:
     message = ""
     message += "SUCCESS.  Checked in at position %s\r\n" % position
@@ -587,35 +538,18 @@ def TryCheckinFlight(res, flight, sch, attempt):
       sch.enterabs(time_module.time() + RETRY_INTERVAL, 1,
                    TryCheckinFlight, (res, flight, sch, attempt + 1))
 
-
-# ========================================================================
-# Email
-
-def send_email(subject, message):
-  if not should_send_email:
+def scheduleFlightCheckin(sch, res, flight):
+  flight_time = utc.localize(flight.depart_time.replace(tzinfo=None))
+  if flight_time < datetime.utcnow().replace(tzinfo=utc):
+    print "Flight already left!"
     return
-  
-  try:
-    smtp = smtplib.SMTP(smtp_server, 587)
-    smtp.ehlo()
-    if smtp_use_tls:
-      smtp.starttls()
-      smtp.ehlo()
-    if smtp_auth:
-      smtp.login(smtp_user, smtp_password)
-    print "sending mail"
-    for to in [string.strip(s) for s in string.split(email_to, ",")]:
-      smtp.sendmail(email_from, email_to, """From: %s
-To: %s
-Subject: %s
+  else:
+    schDelta = timedelta(days=1, minutes=CHECKIN_WINDOW)
+    sched_time = flight_time - schDelta #CHECKIN_WINDOW - 24*60*60
+    print "Update Sched: %s" % DateTimeToString(flight.depart_time.tzinfo.localize(sched_time.replace(tzinfo=None)))
+    #sch.enterabs(calendar.timegm(sched_time.utctimetuple()), 1, TryCheckinFlight, (res, flight, sch, 1))
+    sch.enterabs(time_module.time() + 1, 1, TryCheckinFlight, (res, flight, sch, 1))
 
-%s
-""" % (email_from, email_to, subject, message));
-    print "EMail sent successfully."
-    smtp.close()
-  except:
-    print "Error sending email!"
-    print sys.exc_info()[1]
 
 
 # ========================================================================
@@ -654,18 +588,15 @@ def main():
     addTripInfoToReservation(res)
 
     # print some information to the terminal for confirmation purposes
-    displayFlightInfo(res, res.trip.awayFlights, True)
+    displayFlightInfo(res)
 
     # Schedule all of the flights for checkin.  Schedule 3 minutes before our clock
     # says we are good to go
-    for flight in res.flights:
-      flight_time = time_module.mktime(flight.depart_dt_utc.utctimetuple()) - time_module.timezone
-      if flight_time < time_module.time():
-        print "Flight already left!"
-      else:
-        sched_time = flight_time - CHECKIN_WINDOW - 24*60*60
-        print "Update Sched: %s" % DateTimeToString(datetime.fromtimestamp(sched_time, utc))
-        sch.enterabs(sched_time, 1, TryCheckinFlight, (res, flight, sch, 1))
+    for flight in res.trip.awayFlights:
+      scheduleFlightCheckin(sch, res, flight)
+    for flight in res.trip.returnFlights:
+      scheduleFlightCheckin(sch, res, flight)
+
     
   print "Current time: %s" % DateTimeToString(datetime.now(utc))
   print "Flights scheduled.  Waiting..."

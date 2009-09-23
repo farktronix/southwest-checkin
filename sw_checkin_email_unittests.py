@@ -83,5 +83,23 @@ class ItineraryParserUnitTest(unittest.TestCase):
         departTime = datetime.datetime(2009, 10, 25, 17, 45, tzinfo=timezone('US/Central'))
         assert returnFlight.depart_time == departTime, "Incorrect departure time for return flight" 
 
+class RetrieveItineraryParserUnitTest(unittest.TestCase):
+    def runTest(self):
+        reservationPath = os.getcwd() + "/retrieveItinerary.html"
+        reservationData = sw.ReadFile(reservationPath)
+        assert reservationData != None, "Could not load reservation data from %s" % reservationPath
+        
+        postURL = sw.getFlightItineraryURLFromData(reservationData)
+        assert postURL == "/flight/retrieve-air-reservation.html;jsessionid=0B37A0DF7A4102773B328E46B50715BE", "The post URL is not what was expected: %s" % postURL
+
+class RetrieveCheckinURLUnitTest(unittest.TestCase):
+    def runTest(self):
+        checkinPath = os.getcwd() + "/checkin.html"
+        checkinData = sw.ReadFile(checkinPath)
+        assert checkinData != None, "Could not load checkin data from %s" % checkinPath 
+    
+        postURL = sw.getCheckinPostURLFromData(checkinData)
+        assert postURL == "/cgi-bin/selectBoardingPass", "The post URL is not what was expected: %s" % postURL
+
 if __name__=='__main__':
   unittest.main()
