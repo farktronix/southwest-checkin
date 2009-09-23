@@ -1,5 +1,14 @@
 #! /usr/bin/python
 
+# Southwest automatic checkin tool
+#
+# This tool will automatically check in passengers for any number of reservations 
+# as close to 24 hours in advance of the flight as possible. 
+# Southwest has open seating, but orders its boarding line based on the order that
+# passengers check in. Checking in first means you have a better chance of snagging
+# the best seat in the plane.
+
+# ===============
 # The MIT License
 #
 # Copyright (c) 2008 Joe Beda
@@ -76,7 +85,7 @@ DEBUG_SCH = 0
 # DO NOT change these parameters
 main_url = 'www.southwest.com'
 checkin_url = '/travel_center/retrieveCheckinDoc.html'
-retrieve_url = '/travel_center/retrieveItinerary.html'
+itinerary_url = '/travel_center/retrieveItinerary.html'
 defaultboxes = ["recordLocator", "firstName", "lastName"]
 
 # ========================================================================
@@ -163,30 +172,18 @@ airport_timezone_map = {
   'TUS': tz_arizona,
 }
 
+
 # ========================================================================
+# Debugging
 
 verbose = True
 def dlog(str):
   if verbose:
     print "DEBUG: %s" % str
 
+
 # ========================================================================
-
-class Trip(object):
-  def __init__(self, awayFlights, returnFlights):
-    self.awayFlights = awayFlights
-    self.returnFlights = returnFlights
-
-class Flight(object):
-  def __init__(self, reservation):
-    # All times are in utc
-    self.reservation = reservation
-
-    self.depart_airport= ""
-    self.depart_time = time() 
-
-    self.arrive_airport = ""
-    self.arrive_time = time()
+# Classes
 
 class Reservation(object):
   def __init__(self, first_name, last_name, confcode):
@@ -194,8 +191,24 @@ class Reservation(object):
     self.last_name = last_name
     self.confcode = confcode
 
-# =========== function definitions =======================================
+    self.trip = None
 
+class Trip(object):
+  def __init__(self, awayFlights, returnFlights):
+    self.awayFlights = awayFlights
+    self.returnFlights = returnFlights
+
+class Flight(object):
+  def __init__(self):
+    self.number = 0
+    self.depart_airport= None
+    self.depart_time = time() 
+
+    # not currently filled in
+    self.arrive_airport = None
+    self.arrive_time = time()
+
+# TODO: Move this to BeautifulSoup
 # this is a parser for the Southwest pages
 class HTMLSouthwestParser(HTMLParser):
 
@@ -284,6 +297,14 @@ class HTMLSouthwestParser(HTMLParser):
             self.is_search = False
 
 
+
+# ========================================================================
+# Utility Functions
+
+def DateTimeToString(time):
+  return time.strftime("%I:%M%p %b %d %Y %Z");
+
+
 def WriteFile(filename, data):
   fd = open(filename, "w")
   fd.write(data)
@@ -349,6 +370,10 @@ def setInputBoxes(textnames, conf_number, first_name, last_name):
 
   return params
 
+
+# ========================================================================
+# Flight itinerary parsing
+
 def getFlightNumber(routingSoup):
   fnSep = routingSoup.findAll('td', attrs={"class" : "flightNumberSeparator "})
   return int(fnSep[0].string[1:])
@@ -366,121 +391,88 @@ def getFlightTimeOfDayString(routingSoup):
   details = routingSoup.findAll('td', attrs={"class" : "routingDetailsTimes "})
   return str(details[0].contents[1].string)
 
-# this routine extracts the departure date and time
-def getFlightTimes(the_url, res):
-  if DEBUG_SCH > 1:
-    swdata = ReadFile("Southwest Airlines - Retrieve Itinerary.htm")
-  else:
-    swdata = ReadUrl(main_url, the_url)
+def getFlightTravelDateString(detailSoup):
+  dateTime = detailSoup.findAll('span', attrs={"class" : "travelDateTime"})
+  return dateTime[0].contents[0]
 
-  if swdata == None or len(swdata) == 0:
-    print "Error: no data returned from ", main_url+the_url
-    sys.exit(1)
+def getFlightDateFromItinerary(routingSoup, detailSoup, airportCode):
+  awayDateStr = getFlightTravelDateString(detailSoup)
+  awayDateTime = getFlightTimeOfDayString(routingSoup)
+  if awayDateStr == None or awayDateTime == None:
+    return None
 
-  gh = HTMLSouthwestParser(swdata)
+  return datetime(*time_module.strptime(awayDateStr + " " + awayDateTime, "%A, %B %d, %Y %I:%M %p")[0:5], tzinfo=airport_timezone_map[airportCode])
 
-  # get the post action name from the parser
-  post_url = gh.formaction
-  if post_url == None or post_url == "":
-    print "Error: no POST action found in ", main_url + the_url
-    sys.exit(1)
+def getFlightFromItinerary(routingSoup, detailSoup):
+  flight = Flight()
 
-  # load the parameters into the text boxes
-  params = setInputBoxes(gh.textnames, res.confcode, res.first_name, res.last_name)
+  flight.number = getFlightNumber(routingSoup)
+  flight.depart_airport = getFlightAirportCode(routingSoup)
+  date = getFlightDateFromItinerary(routingSoup, detailSoup, flight.depart_airport)
+  flight.depart_time = date
 
-  # submit the request to pull up the reservations on this confirmation number
-  if DEBUG_SCH > 1:
-    reservations = ReadFile("flightTime.htm")
-  else:
-    reservations = PostUrl(main_url, post_url, params)
+  return flight
 
-  if reservations == None or len(reservations) == 0:
-    print "Error: no data returned from ", main_url + post_url
-    print "Params = ", params
-    sys.exit(1)
-
-  current_pos = 0
-  res.flights = []
-
-  #dlog(reservations)
-
-  flight = Flight(res)
-
-  rSoup = BeautifulSoup(reservations)
-  flightDetails = rSoup.findAll('td', attrs={"class" : "flightInfoDetails"})
-  flightRouting = rSoup.findAll('td', attrs={"class" : "flightRouting"})
+def getTripFromItinerary(itinerarySoup):
+  flightDetails = itinerarySoup.findAll('td', attrs={"class" : "flightInfoDetails"})
+  flightRouting = itinerarySoup.findAll('td', attrs={"class" : "flightRouting"})
 
   awayFlightDetails = flightDetails[0]
   returnFlightDetails = flightDetails[-1]
   awayFlightRouting = flightRouting[0]
   returnFlightRouting = flightRouting[-1]
 
-  awayDateStr = awayFlightDetails.findAll('span', attrs={"class" : "travelDateTime"})
-  awayDateTime = getFlightTimeOfDayString(awayFlightRouting)
-  awayDate = datetime(*time_module.strptime(awayDateStr[0].string + " " + awayDateTime, "%A, %B %d, %Y %I:%M %p")[0:5])
+  awayFlight = getFlightFromItinerary(awayFlightRouting, awayFlightDetails)
+  returnFlight = getFlightFromItinerary(returnFlightRouting, returnFlightDetails)
 
-  print "Date: %s %s (%s)" % (awayDateStr[0].string, awayDateTime, DateTimeToString(awayDate))
+  trip = Trip([awayFlight], [returnFlight])
+  return trip
 
-  return
+def getFlightItineraryHTMLParser():
+  itineraryData = ReadUrl(main_url, itinerary_url)
+
+  if itineraryData == None or len(itineraryData) == 0:
+    print "Error: no data returned from ", main_url+itinerary_url
+    return None
+
+  return HTMLSouthwestParser(itineraryData)
+
+def getFlightItinerary(reservation):
+  gh = getFlightItineraryHTMLParser()
+
+  if gh == None:
+    print "Error: Could not get a HTML parser for the itinerary page"
+    return None
+  
+  # get the post action name from the parser
+  post_url = gh.formaction
+  if post_url == None or post_url == "":
+    print "Error: no POST action found in ", main_url + the_url
+    return None
+
+  # load the parameters into the text boxes
+  params = setInputBoxes(gh.textnames, reservation.confcode, reservation.first_name, reservation.last_name)
+
+  return PostUrl(main_url, post_url, params)
+
+def addTripInfoToReservation(reservation):
+  itinerary = getFlightItinerary(reservation) 
+  if itinerary == None:
+    return False 
+
+  itinerarySoup = BeautifulSoup(itinerary)
+  if itinerarySoup == None:
+    print "Could not parse the itinerary data."
+    return False 
+
+  reservation.trip = getTripFromItinerary(itinerarySoup)
+  if reservation.trip == None:
+    return False
+  return True
 
 
-  # Find all of the flights listed on the page
-  while True:
-    # parse the returned file to grab the dates and times
-    # the last word in the table above the first date is "Routing Details"
-    # this is currently a unique word in the html returned by the above
-    dateloc_0 = reservations.find("Details", current_pos)
-    dateloc_1 = reservations.find("bookingFormText", dateloc_0)
-    i1 = reservations.find(">", dateloc_1)
-    i2 = reservations.find("<", i1)
-    flight_date_str = reservations[i1 + 1:i2]
-
-    # narrow down the search to the line with the word depart
-    timeloc = reservations.find("Depart", dateloc_1)
-    timeline = reservations[timeloc:timeloc+120]
-
-    # use a regular expression to find the two times
-    ts = re.findall("(\w\w\w)\) at (\d{1,2}\:\d{1,2}[apAP][mM])", timeline)
-    if len(ts) < 2:
-      break
-
-    flight = Flight(res)
-    flight.depart_airport = ts[0][0]
-    flight.depart_tz = airport_timezone_map[flight.depart_airport]
-    flight.arrive_airport = ts[1][0]
-    flight.arrive_tz = airport_timezone_map[flight.arrive_airport]
-
-    flight_depart_time = time(*time_module.strptime(ts[0][1], "%I:%M%p")[3:5])
-    flight_arrive_time = time(*time_module.strptime(ts[1][1], "%I:%M%p")[3:5])
-
-    flight_date = date(date.today().year,
-                       *time_module.strptime(flight_date_str, "%b %d")[1:3])
-    if flight_date - date.today() < timedelta(days=-300):
-      flight_date = flight_date.replace(year=flight_date.year+1)
-
-    depart_dt = flight.depart_tz.localize(
-      datetime.combine(flight_date, flight_depart_time),
-      is_dst=None)
-    depart_dt_utc = depart_dt.astimezone(utc)
-    arrive_dt = flight.arrive_tz.localize(
-      datetime.combine(flight_date, flight_arrive_time),
-      is_dst=None)
-    arrive_dt_utc = arrive_dt.astimezone(utc)
-
-    if arrive_dt_utc < depart_dt_utc:
-      arrive_dt = flight.arrive_tz.normalize(
-        arrive_dt.replace(day = arrive_dt.day+1))
-      arrive_dt_utc = arrive_dt.astimezone(utc)
-
-    flight.depart_dt = depart_dt
-    flight.depart_dt_utc = depart_dt_utc
-    flight.arrive_dt = arrive_dt
-    flight.arrive_dt_utc = arrive_dt_utc
-    res.flights.append(flight)
-
-    current_pos = timeloc
-
-  return res.flights
+# ========================================================================
+# Boarding pass parsing
 
 def getBoardingPass(the_url, res):
   # read the southwest checkin web site
@@ -556,8 +548,6 @@ def getBoardingPass(the_url, res):
   else:
     return None
 
-def DateTimeToString(time):
-  return time.strftime("%I:%M%p %b %d %Y %Z");
 
 # print some information to the terminal for confirmation purposes
 def getFlightInfo(res, flights):
@@ -566,11 +556,9 @@ def getFlightInfo(res, flights):
   message += "Passenger name: %s %s\r\n" % (res.first_name, res.last_name)
 
   for (i, flight) in enumerate(flights):
-    message += "Flight %d:\n  Departs: %s %s (%s)\n  Arrives: %s %s (%s)\n" \
-          % (i+1, flight.depart_airport, DateTimeToString(flight.depart_dt),
-             DateTimeToString(flight.depart_dt_utc),
-             flight.arrive_airport, DateTimeToString(flight.arrive_dt),
-             DateTimeToString(flight.arrive_dt_utc))
+    message += "Flight %d:\n  Departs: %s @ %s\n" \
+          % (flight.number, flight.depart_airport,
+             DateTimeToString(flight.depart_time))
   return message
 
 def displayFlightInfo(res, flights, do_send_email=False):
@@ -598,7 +586,11 @@ def TryCheckinFlight(res, flight, sch, attempt):
       print "FAILURE.  Scheduling another try in %d seconds" % RETRY_INTERVAL
       sch.enterabs(time_module.time() + RETRY_INTERVAL, 1,
                    TryCheckinFlight, (res, flight, sch, attempt + 1))
-      
+
+
+# ========================================================================
+# Email
+
 def send_email(subject, message):
   if not should_send_email:
     return
@@ -625,7 +617,9 @@ Subject: %s
     print "Error sending email!"
     print sys.exc_info()[1]
 
-# main program
+
+# ========================================================================
+# Main program
 def main():
 
   if (len(sys.argv) - 1) % 3 != 0 or len(sys.argv) < 4:
@@ -657,10 +651,10 @@ def main():
 
   # get the departure times in a tuple
   for res in reservations:
-    getFlightTimes(retrieve_url, res)
+    addTripInfoToReservation(res)
 
     # print some information to the terminal for confirmation purposes
-    displayFlightInfo(res, res.flights, True)
+    displayFlightInfo(res, res.trip.awayFlights, True)
 
     # Schedule all of the flights for checkin.  Schedule 3 minutes before our clock
     # says we are good to go

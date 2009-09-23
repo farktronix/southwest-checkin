@@ -2,6 +2,8 @@
 
 import unittest
 import os
+import datetime
+from pytz import timezone
 from BeautifulSoup import BeautifulSoup
 
 import sw_checkin_email as sw
@@ -51,6 +53,35 @@ class ItineraryParserUnitTest(unittest.TestCase):
 
         timeOfDayString = sw.getFlightTimeOfDayString(self.returnFlightRouting)
         assert timeOfDayString == "5:45 PM", "Incorrect time of day for return flight. Expected \"5:45 PM\" but got \"%s\"" % timeOfDayString
+
+    def testGetFlightTravelDateStringFromItinerary(self):
+        travelDateString = sw.getFlightTravelDateString(self.awayFlightDetails)
+        expectedDateString = "Thursday, October 22, 2009"
+        assert travelDateString == expectedDateString, "Incorrect date string for away flight. Expected \"%s\" but got \"%s\"" % (expectedDateString, travelDateString)
+
+        travelDateString = sw.getFlightTravelDateString(self.returnFlightDetails)
+        expectedDateString = "Sunday, October 25, 2009"
+        assert travelDateString == expectedDateString, "Incorrect date string for return flight. Expected \"%s\" but got \"%s\"" % (expectedDateString, travelDateString)
+
+    def testGetTripFromItinerary(self):
+        trip = sw.getTripFromItinerary(self.soup)
+        assert trip != None, "Could not get a trip from the itinerary soup"
+        assert len(trip.awayFlights) > 0, "Expected at least one away flight, but got %d" % len(trip.awayFlights)
+        assert len(trip.returnFlights) > 0, "Expected at least one return flight, but got %d" % len(trip.returnFlights)
+
+        awayFlight = trip.awayFlights[0]
+        returnFlight = trip.returnFlights[0]
+
+        assert awayFlight != None, "Away flight is empty"
+        assert returnFlight != None, "Return flight is empty"
+
+        assert awayFlight.depart_airport == "SJC", "Incorrect airport code for away flight. Expected \"SJC\", but got \"%s\"" % awayFlight.depart_airport
+        departTime = datetime.datetime(2009, 10, 22, 11, 15, tzinfo=timezone('US/Pacific'))
+        assert awayFlight.depart_time == departTime, "Incorrect departure time for away flight" 
+
+        assert returnFlight.depart_airport == "TUL", "Incorrect airport code for away flight. Expected \"TUL\", but got \"%s\"" % returnFlight.depart_airport
+        departTime = datetime.datetime(2009, 10, 25, 17, 45, tzinfo=timezone('US/Central'))
+        assert returnFlight.depart_time == departTime, "Incorrect departure time for return flight" 
 
 if __name__=='__main__':
   unittest.main()
