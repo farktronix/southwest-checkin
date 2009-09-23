@@ -172,15 +172,27 @@ def dlog(str):
 
 # ========================================================================
 
+class Trip(object):
+  def __init__(self, awayFlights, returnFlights):
+    self.awayFlights = awayFlights
+    self.returnFlights = returnFlights
+
 class Flight(object):
   def __init__(self, reservation):
+    # All times are in utc
     self.reservation = reservation
 
+    self.depart_airport= ""
+    self.depart_time = time() 
+
+    self.arrive_airport = ""
+    self.arrive_time = time()
+
 class Reservation(object):
-  def __init__(self, first_name, last_name, code):
+  def __init__(self, first_name, last_name, confcode):
     self.first_name = first_name
     self.last_name = last_name
-    self.code = code
+    self.confcode = confcode
 
 # =========== function definitions =======================================
 
@@ -281,6 +293,7 @@ def ReadFile(filename):
   fd = open(filename, "r")
   data = fd.read()
   fd.close()
+  return data
 
 # this function reads a URL and returns the text of the page
 def ReadUrl(host, path):
@@ -338,13 +351,16 @@ def setInputBoxes(textnames, conf_number, first_name, last_name):
 
 def getFlightNumber(routingSoup):
   fnSep = routingSoup.findAll('td', attrs={"class" : "flightNumberSeparator "})
-  return fnSep[0].string[1:]
+  return int(fnSep[0].string[1:])
 
 def getFlightAirportCode(routingSoup):
   details = routingSoup.findAll('td', attrs={"class" : "routingDetailsStops "})
-  airportCodeRegex = re.compile('^.*\((\w+)\).*')
-  airportCodeMatch = airportCodeRegex.match(str(details[0]))
-  return airportCodeMatch.group(1)
+  airportCodeRegex = re.compile('.*Depart.*\((\w+)\).*')
+  airportCodeMatch = airportCodeRegex.search(str(details[0]))
+  if airportCodeMatch != None:
+    return airportCodeMatch.group(1)
+  else:
+    return None
 
 def getFlightTimeOfDayString(routingSoup):
   details = routingSoup.findAll('td', attrs={"class" : "routingDetailsTimes "})
@@ -370,7 +386,7 @@ def getFlightTimes(the_url, res):
     sys.exit(1)
 
   # load the parameters into the text boxes
-  params = setInputBoxes(gh.textnames, res.code, res.first_name, res.last_name)
+  params = setInputBoxes(gh.textnames, res.confcode, res.first_name, res.last_name)
 
   # submit the request to pull up the reservations on this confirmation number
   if DEBUG_SCH > 1:
@@ -488,7 +504,7 @@ def getBoardingPass(the_url, res):
 
   # load the parameters into the text boxes by name
   # where the names are obtained from the parser
-  params = setInputBoxes(gh.textnames, res.code, res.first_name, res.last_name)
+  params = setInputBoxes(gh.textnames, res.confcode, res.first_name, res.last_name)
 
   # submit the request to pull up the reservations
   if DEBUG_SCH > 1:
@@ -546,7 +562,7 @@ def DateTimeToString(time):
 # print some information to the terminal for confirmation purposes
 def getFlightInfo(res, flights):
   message = ""
-  message += "Confirmation number: %s\r\n" % res.code
+  message += "Confirmation number: %s\r\n" % res.confcode
   message += "Passenger name: %s %s\r\n" % (res.first_name, res.last_name)
 
   for (i, flight) in enumerate(flights):
@@ -609,36 +625,6 @@ Subject: %s
     print "Error sending email!"
     print sys.exc_info()[1]
 
-def unitTest():
-  soup = BeautifulSoup('<tr class="tableRowOdd">\
-                <td class="flightNumberSeparator ">#1476</td>\
-                <td class="routingDetailsStops ">\
-                Depart <strong>San Jose, CA (SJC)</strong>\
-                <br/>\
-                <div class="stopInfo">\
-                        Stops in\
-                            Las Vegas, NV\
-                </div>\
-                </td>\
-                <td class="routingDetailsTimes ">\
-                <strong>11:15 AM</strong>\
-                </td>\
-            </tr>\
-            <tr class="tableRowOdd">\
-                <td class="flightNumberSeparator">&nbsp;</td>\
-                <td class="routingDetailsStops">\
-                    Arrive in <strong>Tulsa, OK (TUL)</strong>\
-                </td>\
-                <td class="routingDetailsTimes" style="vertical-align:bottom">\
-                    <strong>5:55 PM</strong>\
-                </td>\
-            </tr>\
-')
-  print "Airport code: %s" % getFlightAirportCode(soup)
-  print "Flight number: %s" % getFlightNumber(soup)
-  print "Flight time: %s" % getFlightTimeOfDayString(soup)
-  return
-
 # main program
 def main():
 
@@ -651,8 +637,8 @@ def main():
 
   args = sys.argv[1:]
   while len(args):
-    (firstname, lastname, code) = args[0:3]
-    reservations.append(Reservation(firstname, lastname, code))
+    (firstname, lastname, confcode) = args[0:3]
+    reservations.append(Reservation(firstname, lastname, confcode))
     del args[0:3]
 
   global smtp_user, smtp_password, email_from, email_to

@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+ 
+
+
+
+
+
+
+ 
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+	<title>Southwest Airlines - Retrieve Itinerary</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"/>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+	<meta http-equiv="Content-Style-Type" content="text/css"/>
+
+	<link rel="stylesheet" type="text/css" href="/assets/v10397/styles/sw_common.min.css" media="all"/>
+	<link rel="stylesheet" type="text/css" href="/assets/v10397/styles/sw_header.min.css"/>
+	<link rel="stylesheet" type="text/css" href="/assets/v10397/styles/swa_typography.min.css" media="all" />
+	<link rel="stylesheet" type="text/css" href="/assets/v10397/styles/swa_layout.min.css" media="all"/>
+	<link rel="stylesheet" type="text/css" href="/assets/v10397/styles/swa_footer.min.css" media="all"/>
+	<link rel="stylesheet" type="text/css" href="/assets/v10397/styles/global_print.min.css" media="print"/>
+	
+
+	<link rel="shortcut icon" href="/assets/images/favicon.ico"/>
+	<link rel="icon" href="/assets/images/favicon.ico"/>
+
+	<!--[if lte IE 7]>
+			<link rel="stylesheet" type="text/css" media="screen" href="/assets/v10397/styles/ie7.min.css" media="all"/>
+	<![endif]-->
+	<!--[if lte IE 6]>
+        <link rel="stylesheet" type="text/css" media="screen" href="/assets/v10397/styles/ie6.min.css" media="all"/>
+    <![endif]-->
+
+	
+	<script type="text/javascript" src="/assets/v10397/scripts/jquery-1.3.2.min.js"></script>
+	
+	
+	<link rel="stylesheet" type="text/css" href="/assets/v10397/styles/retrieval.min.css"/>
+	<link rel="stylesheet" type="text/css" href="/assets/v10397/styles/reservations_restyle.min.css"/>
+
+	<script type="text/javascript">
+		var openx={
+			dest : "",
+			disc : "XXXXXXXX",
+			ss : "0"
+		};
+		var enableAccessibilityFunctionality=false;
+		
+			
+			
+				var isSwaBiz=false;
+			
+		
+	</script>
+
+</head>
+<body>
+<div class="skipNavigationLink">
+	<a href="#" id="enableAccessibilityFunctionality" title="If you are using a screen reader, please click here to enable screen reader-friendly functionality"><img src="/assets/images/blank.gif" height="1" width="100" alt="If you are using a screen reader, please click here to enable screen reader-friendly functionality"/></a>
+	<a href="#content" title="Skip top navigation"><img src="/assets/images/blank.gif" height="1" width="100" alt="Skip top navigation"/></a>
+</div>
+<div id="page">
+<img src="/assets/images/dropdown-calendar.gif" style="display:none" alt="dropdown calendar icon (for preloading)" />
+	
+	
+	
+
+
+	<div id="sw_header_top"></div>
+	<div id="sw_header">
+		
+ 
+
+
+
+
+
+
+ 
+
+
+<div id="logo_and_header_link_area_container">
+	<ul id="header_link_area" class="gray1_text">
+		<li><a title="Home" href="/?int=GNAVHOMESWA">Home</a></li>
+<li>|<a title="Sign Up 'n Save" href="/specialoffers/signup.html?int=GNAVCNSDNGSWA">Sign Up 'n Save</a></li>
+<li>|<a title="About Southwest" href="/about_swa/?int=GNAVABOUTSWA">About Southwest</a></li>
+<li>|<a title="Help" href="/help?int=GNAVHELPSWA">Help</a></li>
+		
+	
+		
+	
+	
+
+	</ul>
+</div>
+<div id="sw_navigation_holder">
+	
+	
+
+	<ul id="sw_navigation">
+		<li><a href="/?int=GNAVHOMELOGO" id="swa_logo" title="Go to the Southwest Airlines Homepage"><img src="/assets/images/header/swa_logo.gif" alt='southwest.com' /></a></li>
+		<li><a href="/flight?int=GNAVBOOKAIR" title="Book a Flight, Car, Hotel, Cruise, or Vacation Package Now!" id="book_travel_rollover">Book Travel</a></li>
+		<li><a href="http://travel.southwest.com/specialoffers/topOffers.html?int=GNAVSPCLOFFR" title="Find Great Travel Special Offers!" id="find_a_deal_rollover">Special Offers</a></li>
+		<li><a href="/travel_center?int=GNAVTRVLTOOL" title="Manage an Existing Reservation and Other Flight Related Tools" id="travel_tools_active">Travel Tools</a></li>
+		<li><a href="/rapid_rewards/?int=GNAVRPDRWDS" title="Earn free travel with Rapid Rewards, Southwest Airlines&#39; Frequent Flyer Program" id="rapid_rewards_rollover">Rapid Rewards</a></li>
+		<li><a href="http://travel.southwest.com/travel/exploreTravel.html?int=GNAVTRVLGUDE" title="Find things to do and Travel Tips from Southwest Travelers with the Travel Guide" id="explore_travel_rollover">Find things to do and Travel Tips from Southwest Travelers with the Travel Guide</a></li>
+	</ul>
+</div>
+
+	</div>
+
+	<div id="sw_extra"></div>
+
+	<div id="page_content">
+		
+
+		<div id="breadcrumbs">
+			
+		</div>
+
+		<a name="content"></a>
+		<div id="sw_main">
+			
+
+			<div id="sw_main_section">
+				<div id="oopsSuccesses">
+					
+				</div>
+				<div id="wide_title">
+					<img src="/assets/images/header/swa_logo.png" alt="southwest.com" id="print_image"/>
+					<h3 id="page_title">
+	<strong><span id="cancelTitle">Retrieve Air Reservation</span></strong>
+</h3>
+				</div>
+
+				<div id="sw_content">
+					
+
+
+<div class="topPageInstructions">
+Enter information for any of the passengers listed on the reservation to view and send copies of your itinerary (only for reservations made online).
+</div>
+
+
+
+<div class="requiredWrapper">
+	<span class="required">* Required</span>
+</div>
+<h4 class="headerAboveSubsection">Enter Your Reservation Info</h4>
+<form id="itineraryLookup" name="retrieveItinerary" action="/flight/retrieve-air-reservation.html;jsessionid=0B37A0DF7A4102773B328E46B50715BE" method="POST">
+	<div class="retrieveItineraryWrapper">
+	<div id="fields">
+		<div class="childField">
+			<div class="formLabel">
+			<label for="confirmationNumber"><span class="required">*</span>Confirmation Number:</label>
+			</div>
+			
+			<input id="confirmationNumber" name="confirmationNumber" title="Confirmation Number" tabindex="1" type="text" value="" maxlength="12"/>
+		</div>
+		<div class="childField">
+			<div class="formLabel">
+			<label for="firstName"><span class="required">*</span>Passenger First Name:</label>
+			</div>
+			
+			<input id="firstName" name="firstName" title="Passenger First Name" tabindex="2" type="text" value="" maxlength="25"/>
+		</div>
+		<div class="childField">
+			<div class="formLabel">
+			<label for="lastName"><span class="required">*</span>Passenger Last Name:</label>
+			</div>
+			
+			<input id="lastName" name="lastName" title="Passenger Last Name" tabindex="3" type="text" value="" maxlength="25"/>
+		</div>
+	</div>
+
+	<div id="confirmationContainer">
+		<div id="confirmationNote">
+			Confirmation Numbers use letters O and I<br/>instead of numbers 0 (zero) and 1 (one).
+		</div>
+	</div>
+</div>
+
+	<h4 class="aboveSubmitButtonText">Continue to retrieve reservation</h4>
+	<div class="retrieveItinerarySubmit">
+	<input type="submit" class="submitButton" id="submitButton" tabindex="4" value="Continue" title="Continue"/>
+	</div>
+</form>
+
+
+
+
+
+
+				</div>
+			</div>
+
+			
+
+			
+				<div id="right_nav">
+					<img src="/assets/images/account-bar-top.gif" alt="Account Bar"/><div id="profile">
+
+	
+	
+		<h6 class="mySouthwestLogin">
+			MySouthwest Login<span> (optional)</span>
+		</h6>
+		
+		<div class="account_bar_content1">
+			<div class="content">
+				<form id="loginForm" action="https://www.southwest.com/flight/login.html" method="POST">
+					
+					<input id="memberNumber" name="memberNumber" style="height: 20px;" title="Enter account number" tabindex="100" type="text" value=""/>
+					
+					<input id="password" name="password" style="height: 20px;" title="Enter Password" tabindex="101" type="password" value="" size="18" maxlength="14" autocomplete="off"/>
+					<input type="text" id="defaultPassword" style="display:none; height: 20px;" size="18" maxlength="14" class="" title="Enter Password" tabindex="102"/>
+					<input type="hidden" name="ss" value="0"/>
+<input type="hidden" name="disc" value="XXXXXXXX"/>
+
+					<a title="Forgot Password?" class="loginLink" href="/cgi-bin/updateTravelerAccount?action=buildforgotpasswordform">
+					Forgot Password?
+					</a>
+					<input id="loginButton" type="image" alt="Go" title="Go" src="/assets/images/btn-login.gif" name="loginButton" tabindex="103"/>
+
+					<div class="rememberMeDiv">
+						
+						<input id="rememberMe" name="rememberMe" title="Remember Me" tabindex="104" type="checkbox" value="true"/><input type="hidden" name="_rememberMe" value="on"/>
+						<label class="rememberMeLabel" for="rememberMe">Remember Me</label>
+					</div>
+					<input type="hidden" name="returnUrl" value="http://www.southwest.com/flight/retrieve-air-reservation.html" />
+				</form>
+				<form action="https://www.southwest.com/cgi-bin/createTravelerAccount" method="POST">
+					<input type="hidden" name="action" value="buildAccountInfoForm"/>
+					<input type="hidden" name="ss" value="0"/>
+<input type="hidden" name="disc" value="XXXXXXXX"/>
+
+					<input class="createAccountLink" title="Create an Account" type="submit" value="Create an Account"/>
+				</form>
+			</div>
+		</div>
+	
+	
+
+<div class="account_bar_content" style="padding-top: 5px; padding-bottom: 4px;">
+	
+	<div class="account_bar_content_box">
+		<h6>Helpful Links</h6>
+<div class="content">
+	<ul>
+		<li><a title="Baggage Policies" href="/travel_center/baggage.html">Baggage Policies</a></li>
+		<li><a title="Checkin & Boarding Procedures" href="/travel_center/checkin.html">Checkin & Boarding Procedures</a></li>
+		<li><a title="Inflight Amenities" href="/travel_center/inflight.html">Inflight Amenities</a></li>
+		<li><a title="Suggested Airport Arrival Times" href="/travel_center/suggested_arrival.html">Suggested Airport Arrival Times</a></li>
+	</ul>
+</div>
+
+	</div>
+
+</div>
+</div>
+
+					<div id="ad">
+						
+	
+
+					</div>
+				</div>
+			
+		</div>
+
+		<div id="sw_footer">
+			
+				<div id="footer_otherServices">
+	<div id="footer_otherServicesVacations">
+	<a title="Vacation Packages" href="/jp/vacations.html" target="_blank">Vacation
+	Packages</a>
+	</div>
+	<div id="footer_otherServicesSwaBiz">
+	<a title="Business Travel" href="/jp/swabiz.html" target="_blank">Business
+	Travel</a>
+	</div>
+	<div id="footer_otherServicesCargo">
+	<a title="Ship Packages" href="/jp/swacargo.html" target="_blank">Ship Packages</a>
+	</div>
+</div>
+
+<div id="footer_navigation" class="gray1_text">
+
+	<ul>
+		<li><a title="Home" href="/?int=FOOTSITE_HOME" >Home</a>|</li>
+		<li><a title="Air" href="/cgi-bin/buildItinerary2?int=FOOTSITE_AIR" >Air</a>|</li>
+		<li><a title="Cars" href="/cgi-bin/carTab?int=FOOTSITE_CARS" >Cars</a>|</li>
+		<li><a title="Hotels" href="/cgi-bin/hotelTab?int=FOOTSITE_HOTELS" >Hotels</a>|</li>
+		<li><a title="Cruises" href="http://go.southwest.travelpn.com/ecruise/CruiseSearchForm.do?int=FOOTSITE_CRUISES">Cruises</a>|</li>
+		<li><a title="Travel Tools" href="/travel_center/travel_center.html?int=FOOTSITE_TOOLS">Travel Tools</a>|</li>
+		<li><a title="Rapid Rewards" href="/rapid_rewards?int=FOOTSITE_RR">Rapid Rewards</a></li>
+	</ul>
+
+	<ul>
+		<li><a title="Travel Guide" href="http://travel.southwest.com/travel/exploreTravel.html?int=FOOTSITE_TVLGUIDE">Travel Guide</a>|</li>
+		<li><a title="Group Travel" href="/programs_services/groups/groups.html?int=FOOTSITE_GROUP">Group Travel</a>|</li>
+		<li><a title="Shuttle Services" href="http://southwest.iseatz.com?int=FOOTSITE_SHUTTLE">Shuttle Services</a>|</li>
+		<li><a title="Where We Fly" href="/travel_center/routemap_dyn.html?int=FOOTSITE_WHERE">Where We Fly</a>|</li>
+		<li><a title="About Southwest" href="/about_swa?int=FOOTSITE_ABOUT">About Southwest</a></li>
+	</ul>
+
+	<ul>
+		<li><a title="Careers" href="/careers?int=FOOTSITE_CAREER">Careers</a>|</li>
+		<li><a title="Our Blog" href="/jp/blog.html?int=FOOTSITE_BLOG" target="_blank">Our Blog</a>|</li>
+		<li><a title="Contact Us" href="/about_swa/luvbook.html?int=FOOTSITE_CONTACT">Contact Us</a>|</li>
+		<li><a title="Help" href="/help/help_index.html?int=FOOTSITE_HELP">Help</a>|</li>
+		<li><a title="Site Map" href="/help/site_map.html?int=FOOTSITE_SITEMAP">Site Map</a></li>
+	</ul>
+
+</div>
+
+<div class="std_body4" id="footer_copyright">
+	Use of the Southwest websites and our
+	Company Information constitutes acceptance of our<br />
+	<a title="Terms and Conditions" href="/about_swa/terms_and_con.html?int=FOOTSITE_TERMS">Terms
+	and Conditions</a>. <a title="Privacy Policy"
+		href="/travel_center/privacy_policy.html?int=FOOTSITE_POLICY">Privacy
+	Policy</a>. &#169;2008 Southwest Airlines Co. All Rights Reserved
+</div>
+			
+			
+		</div>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+	document.write('<iframe src="/assets/v10397/blank.html" scrolling="no" width="0" height="0" frameborder="0" id="iframetop"></iframe>');
+</script>
+<div id="destination_flyout" class="destination_flyout" style="display: none"></div>
+
+<script type="text/javascript" src="/assets/v10397/scripts/global.min.js"></script>
+<script type="text/javascript">
+	// these script variables need to be in this location to ensure that the paths are updated properly 
+	var uiDatepickerJavascriptLocation="/assets/v10397/scripts/ui.datepicker.min.js";
+	var departReturnDatepickerJavascriptLocation="/assets/v10397/scripts/departAndReturnDatePickers.min.js";
+	var tablesorterJavascriptLocation="/assets/v10397/scripts/jquery.tablesorter.min.js";
+	var destFlyoutsJavascriptLocation="/assets/v10397/scripts/destination_flyouts.min.js";
+	var destFlyoutsFilterJavascriptLocation="/assets/v10397/scripts/destination_flyouts_filter.min.js";
+	var validRoutesJavascriptLocation="/flight/validRoutes.js";
+	var upsellJavascriptLocation="/assets/v10397/scripts/upsell.min.js";
+</script>
+
+<div id="scripts">
+	<script type="text/javascript" src="/assets/v10397/scripts/analytics/header.min.js"></script>
+	
+	<script type="text/javascript" src="/assets/v10397/scripts/analytics/airRetrieveSearchForItineraryDefs.min.js"></script>
+
+	<script type="text/javascript">
+		var analyticsSendJavascriptLoaded=false;
+		$(document).ready(function() {
+			if (!analyticsSendJavascriptLoaded) {
+				analyticsSendJavascriptLoaded=true;
+				$.getScript("/assets/v10397/scripts/analytics/send.min.js");
+			}
+		});
+	</script>
+</div>
+
+
+</body>
+</html>

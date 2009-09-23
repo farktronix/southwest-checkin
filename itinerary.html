@@ -1,0 +1,776 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+ 
+
+
+
+
+
+
+ 
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+	<title>Southwest Airlines - Retrieve Itinerary</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"/>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+	<meta http-equiv="Content-Style-Type" content="text/css"/>
+
+	<link rel="stylesheet" type="text/css" href="/assets/v10397/styles/sw_common.min.css" media="all"/>
+	<link rel="stylesheet" type="text/css" href="/assets/v10397/styles/sw_header.min.css"/>
+	<link rel="stylesheet" type="text/css" href="/assets/v10397/styles/swa_typography.min.css" media="all" />
+	<link rel="stylesheet" type="text/css" href="/assets/v10397/styles/swa_layout.min.css" media="all"/>
+	<link rel="stylesheet" type="text/css" href="/assets/v10397/styles/swa_footer.min.css" media="all"/>
+	<link rel="stylesheet" type="text/css" href="/assets/v10397/styles/global_print.min.css" media="print"/>
+	
+
+	<link rel="shortcut icon" href="/assets/images/favicon.ico"/>
+	<link rel="icon" href="/assets/images/favicon.ico"/>
+
+	<!--[if lte IE 7]>
+			<link rel="stylesheet" type="text/css" media="screen" href="/assets/v10397/styles/ie7.min.css" media="all"/>
+	<![endif]-->
+	<!--[if lte IE 6]>
+        <link rel="stylesheet" type="text/css" media="screen" href="/assets/v10397/styles/ie6.min.css" media="all"/>
+    <![endif]-->
+
+	
+	<script type="text/javascript" src="/assets/v10397/scripts/jquery-1.3.2.min.js"></script>
+	
+	<link rel="stylesheet" type="text/css" href="/assets/v10397/styles/retrieval.min.css"/>
+	<link rel="stylesheet" type="text/css" href="/assets/v10397/styles/itinerary.min.css"/>
+	<link rel="stylesheet" type="text/css" href="/assets/v10397/styles/reservations_restyle.min.css"/>
+	<link rel="stylesheet" type="text/css" href="/assets/v10397/styles/icsPopup.min.css"/>
+	<link rel="stylesheet" type="text/css" href="/assets/v10397/styles/priceItineraryPopup.min.css"/>
+
+	
+	
+
+	<script type="text/javascript">
+		var openx={
+			dest : "",
+			disc : "XXXXXXXX",
+			ss : "0"
+		};
+		var enableAccessibilityFunctionality=false;
+		
+			
+			
+				var isSwaBiz=false;
+			
+		
+	</script>
+
+</head>
+<body>
+<div class="skipNavigationLink">
+	<a href="#" id="enableAccessibilityFunctionality" title="If you are using a screen reader, please click here to enable screen reader-friendly functionality"><img src="/assets/images/blank.gif" height="1" width="100" alt="If you are using a screen reader, please click here to enable screen reader-friendly functionality"/></a>
+	<a href="#content" title="Skip top navigation"><img src="/assets/images/blank.gif" height="1" width="100" alt="Skip top navigation"/></a>
+</div>
+<div id="page">
+<img src="/assets/images/dropdown-calendar.gif" style="display:none" alt="dropdown calendar icon (for preloading)" />
+	
+	
+	
+
+
+	<div id="sw_header_top"></div>
+	<div id="sw_header">
+		
+ 
+
+
+
+
+
+
+ 
+
+
+<div id="logo_and_header_link_area_container">
+	<ul id="header_link_area" class="gray1_text">
+		<li><a title="Home" href="/?int=GNAVHOMESWA">Home</a></li>
+<li>|<a title="Sign Up 'n Save" href="/specialoffers/signup.html?int=GNAVCNSDNGSWA">Sign Up 'n Save</a></li>
+<li>|<a title="About Southwest" href="/about_swa/?int=GNAVABOUTSWA">About Southwest</a></li>
+<li>|<a title="Help" href="/help?int=GNAVHELPSWA">Help</a></li>
+		
+	
+		
+	
+	
+
+	</ul>
+</div>
+<div id="sw_navigation_holder">
+	
+	
+
+	<ul id="sw_navigation">
+		<li><a href="/?int=GNAVHOMELOGO" id="swa_logo" title="Go to the Southwest Airlines Homepage"><img src="/assets/images/header/swa_logo.gif" alt='southwest.com' /></a></li>
+		<li><a href="/flight?int=GNAVBOOKAIR" title="Book a Flight, Car, Hotel, Cruise, or Vacation Package Now!" id="book_travel_rollover">Book Travel</a></li>
+		<li><a href="http://travel.southwest.com/specialoffers/topOffers.html?int=GNAVSPCLOFFR" title="Find Great Travel Special Offers!" id="find_a_deal_rollover">Special Offers</a></li>
+		<li><a href="/travel_center?int=GNAVTRVLTOOL" title="Manage an Existing Reservation and Other Flight Related Tools" id="travel_tools_active">Travel Tools</a></li>
+		<li><a href="/rapid_rewards/?int=GNAVRPDRWDS" title="Earn free travel with Rapid Rewards, Southwest Airlines&#39; Frequent Flyer Program" id="rapid_rewards_rollover">Rapid Rewards</a></li>
+		<li><a href="http://travel.southwest.com/travel/exploreTravel.html?int=GNAVTRVLGUDE" title="Find things to do and Travel Tips from Southwest Travelers with the Travel Guide" id="explore_travel_rollover">Find things to do and Travel Tips from Southwest Travelers with the Travel Guide</a></li>
+	</ul>
+</div>
+
+	</div>
+
+	<div id="sw_extra"></div>
+
+	<div id="page_content">
+		
+
+		<div id="breadcrumbs">
+			
+		</div>
+
+		<a name="content"></a>
+		<div id="sw_main">
+			
+
+			<div id="sw_main_section">
+				<div id="oopsSuccesses">
+					
+				</div>
+				<div id="wide_title">
+					<img src="/assets/images/header/swa_logo.png" alt="southwest.com" id="print_image"/>
+					<h3 id="page_title">
+	<strong>View and Email Air Reservation</strong>
+</h3>
+				</div>
+
+				<div id="sw_content">
+					
+
+
+
+
+<div style="float:left;clear:both;width:750px">
+<div style="float:left;width:500px">
+<h5 class="travel_type_air">Air</h5>
+</div>
+
+<div style="float:right;width:250px;text-align:right;height:50px">
+	<img src="/assets/images/icon-save.gif" alt="Add to Calendar" style="vertical-align: middle"/>
+	<a title="Add to Calendar" target="_blank" id="saveToMyCalendar" href="/flight/pop_saveCalendar-retrieval.html?ss=0&amp;disc=0%3A4%3A1253670958.620000%3A29563%40C3788DCCB9F1E3AC501390D707C267325B5670C6">Add to Calendar</a>
+</div>
+<img src="/assets/images/fare_product_pointer_noShadow_bottom.gif" alt="Save to Calendar Pointer" id="ics_pointer" style="display:none;position:absolute"/>
+<div id="icsDiv" class="priceItineraryPopupTable icsPopupTable icsPopup" style="display:none;">
+	
+	
+	
+<div id="icsData" class="icsPopupDetails" >
+	<h5>Save to My Calendar</h5>
+	<span class="icsPopupDetailsClose" id="closeICS" style="display:none">
+		<span class="close_link">Close</span>
+		<img alt="Close" src="/assets/images/fare_product_header_close.gif" style="vertical-align: middle"/>
+	</span>
+</div>
+<div class="icsPopupDetailsContainer">
+	<table summary="This table contains information about saving trip to outlook">
+		<tr class="leftColumn">
+			<td style="padding-top:4px">
+				Export your <strong>SJC to TUL</strong> trip
+			</td>
+		</tr>
+		<tr class="leftColumn">
+			<td style="border-bottom: 1px dotted #cccccc !important;padding-bottom: 4px">
+				
+				<a title="Export your Outbound trip to an Outlook appointment" href="/flight/download-outbound-retrieval-ics.html?ss=0&amp;disc=0%3A4%3A1253670958.620000%3A29563%40C3788DCCB9F1E3AC501390D707C267325B5670C6"><img src="/assets/images/outlook.png" alt="outlook" style="vertical-align: middle;margin-right:5px" />Outlook&reg;</a>
+				
+				&nbsp;&nbsp;&nbsp;&nbsp;
+				<a title="Export your Outbound trip to an iCal compatible appointment" href="/flight/download-outbound-retrieval-ics.html?ss=0&amp;disc=0%3A4%3A1253670958.620000%3A29563%40C3788DCCB9F1E3AC501390D707C267325B5670C6"><img src="/assets/images/ical.png" alt="ical" style="vertical-align: middle;margin-right:5px" />iCal compatible</a>
+			</td>
+		</tr>
+		
+			<tr class="leftColumn">
+				<td style="padding-top:4px">
+					Export your <strong>TUL to SJC</strong> trip
+				</td>
+			</tr>
+			<tr class="leftColumn">
+				<td style="padding-bottom: 4px">
+					
+					<a title="Export your Inbound trip to an Outlook appointment" href="/flight/download-inbound-retrieval-ics.html?ss=0&amp;disc=0%3A4%3A1253670958.620000%3A29563%40C3788DCCB9F1E3AC501390D707C267325B5670C6"><img src="/assets/images/outlook.png" alt="outlook" style="vertical-align: middle;margin-right:5px" />Outlook&reg;</a>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					
+					<a title="Export your Inbound trip to an iCal compatible appointment" href="/flight/download-inbound-retrieval-ics.html?ss=0&amp;disc=0%3A4%3A1253670958.620000%3A29563%40C3788DCCB9F1E3AC501390D707C267325B5670C6"><img src="/assets/images/ical.png" alt="ical" style="vertical-align: middle;margin-right:5px" />iCal compatible</a>
+				</td>
+			</tr>
+		
+	</table>
+</div>
+
+</div>
+</div>
+
+
+<ul id="confirmation_numbers">
+	
+		<li>
+			<ul class="passenger_info" id="passenger1">
+				<li class="passenger_name">
+					<strong>Passenger 1:</strong>
+				    BOBBY TABLES 
+				</li>
+				<li class="passenger_accountnumber">
+					
+						
+                            Acct#: 00000123456789
+						
+						
+					
+				</li>
+				<li class="passenger_conf">
+					Confirmation # AB12A1
+				</li>
+				
+			</ul>
+		</li>
+	
+</ul>
+
+<p class="sectionInformation">Air Itinerary</p>
+
+	
+	
+		
+		<table summary="This table contains outbound flight information" name="airItinerarydepart" id="airItinerarydepart" class="airItineraryTable">
+			<tbody>
+				<tr class="tableRowOdd">
+					
+					
+<td class="priceDataHeader calDate">
+	
+		<span class="departOrReturn">Depart</span>
+	
+	<div class="calendarDate">
+		<div class="month">Oct</div>
+		<div class="day">22</div>
+	</div>
+</td>
+<td class="flightInfoDetails">
+	
+	
+	
+	<strong><span>San Jose, CA</span> to <span>Tulsa, OK</span></strong><br/>
+	
+	<span class="travelDateTime">Thursday, October 22, 2009</span><br/>
+	<span class="travelFlightDuration">Travel Time 4 h 40 m</span> <br/>
+	
+		
+		
+		<span>(1 stop,
+		
+			
+			no plane change)
+		
+		</span>
+	
+	
+
+	
+</td>
+<td class="flightRouting">
+	
+	<table class="airItineraryFlightRouting" summary="This table contains itinerary information">
+		
+			
+				
+					
+					
+				
+				
+			
+			<tr class="tableRowOdd">
+				<td class="flightNumberSeparator ">#1476</td>
+				<td class="routingDetailsStops ">
+				Depart <strong>San Jose, CA (SJC)</strong>
+				<br/>
+				<div class="stopInfo">
+					
+						Stops in
+						
+							
+							Las Vegas, NV
+						
+					
+				</div>
+				</td>
+				<td class="routingDetailsTimes ">
+				<strong>11:15 AM</strong>
+				</td>
+			</tr>
+			<tr class="tableRowOdd">
+				<td class="flightNumberSeparator">&nbsp;</td>
+				<td class="routingDetailsStops">
+					Arrive in <strong>Tulsa, OK (TUL)</strong>
+				</td>
+				<td class="routingDetailsTimes" style="vertical-align:bottom">
+					<strong>5:55 PM</strong>
+				</td>
+			</tr>
+		
+	</table>
+</td>
+				</tr>
+			</tbody>
+		</table>
+
+		
+		
+			<table style="border-top-style: none" summary="This table contains inbound flight information" name="airItineraryreturn" id="airItineraryreturn" class="airItineraryTable">
+				<tbody>
+					<tr class="tableRowEven">
+						
+						
+<td class="priceDataHeader calDate">
+	
+		<span class="departOrReturn">Return</span>
+	
+	<div class="calendarDate">
+		<div class="month">Oct</div>
+		<div class="day">25</div>
+	</div>
+</td>
+<td class="flightInfoDetails">
+	
+	
+	
+	<strong><span>Tulsa, OK</span> to <span>San Jose, CA</span></strong><br/>
+	
+	<span class="travelDateTime">Sunday, October 25, 2009</span><br/>
+	<span class="travelFlightDuration">Travel Time 6 h 05 m</span> <br/>
+	
+		
+		
+		<span>(1 stop,
+		
+			includes 1 plane change)
+			
+		
+		</span>
+	
+	
+
+	
+</td>
+<td class="flightRouting">
+	
+	<table class="airItineraryFlightRouting" summary="This table contains itinerary information">
+		
+			
+				
+					
+					
+				
+				
+			
+			<tr class="tableRowEven">
+				<td class="flightNumberSeparator ">#34</td>
+				<td class="routingDetailsStops ">
+				Depart <strong>Tulsa, OK (TUL)</strong>
+				<br/>
+				<div class="stopInfo">
+					
+				</div>
+				</td>
+				<td class="routingDetailsTimes ">
+				<strong>5:45 PM</strong>
+				</td>
+			</tr>
+			<tr class="tableRowEven">
+				<td class="flightNumberSeparator">&nbsp;</td>
+				<td class="routingDetailsStops">
+					Arrive in Phoenix, AZ (PHX)
+				</td>
+				<td class="routingDetailsTimes" style="vertical-align:bottom">
+					6:25 PM
+				</td>
+			</tr>
+		
+			
+				
+				
+					
+					
+				
+			
+			<tr class="tableRowEven">
+				<td class="flightNumberSeparator routingDetailsSeparator">#406</td>
+				<td class="routingDetailsStops routingDetailsSeparator">
+				Change <img src="/assets/images/icon_change_trip.gif" alt="connect, change plane"/> in Phoenix, AZ (PHX)
+				<br/>
+				<div class="stopInfo">
+					
+				</div>
+				</td>
+				<td class="routingDetailsTimes routingDetailsSeparator">
+				7:55 PM
+				</td>
+			</tr>
+			<tr class="tableRowEven">
+				<td class="flightNumberSeparator">&nbsp;</td>
+				<td class="routingDetailsStops">
+					Arrive in <strong>San Jose, CA (SJC)</strong>
+				</td>
+				<td class="routingDetailsTimes" style="vertical-align:bottom">
+					<strong>9:50 PM</strong>
+				</td>
+			</tr>
+		
+	</table>
+</td>
+					</tr>
+				</tbody>
+			</table>
+		
+	
+
+
+<h4 style="float:left;clear:both;width:500px" class="headerAboveSubsection">
+	Let Them Know You are on Your Way
+</h4>
+<div class="emailItinerary">
+	<p>Check the boxes and enter/update e-mail addresses to (re)send itineraries. Remember, no payment information will be included in these emails.</p>
+
+	<form id="itineraryEmailsForm" name="itineraryEmailsForm" action="/flight/view-reservation.html?companyName=&amp;cid=&amp;memberName=&amp;disc=XXXXXXXXXXamp;dest=&amp;ss=0" method="POST">
+		<div class="itineraryEmailsTable">
+		<input type="hidden" name="ss" value="0"/>
+<input type="hidden" name="disc" value="XXXXXXXX"/>
+
+		<script type="text/javascript">
+			$(document).ready(function(){
+				$("a.popup_emailItineraryStatus").click(function(){
+					openWindow(this, 'promocode','width=400,height=350,top=150,left=20,scrollbars,resizable,status', 0);
+					return false;
+				});
+			});
+		</script>
+		<table name="itineraryEmails" id="itineraryEmails" summary="This table contains information about itinerary emails">
+			<thead>
+				<tr class="tableRowOdd">
+					<th style="vertical-align: bottom;">Send</th>
+					<th style="vertical-align: bottom;">E-mail address</th>
+					<th style="vertical-align: bottom;">
+						Status
+						<a title="Status"  href="/html/help/help_popup_email_itinerary_status.html" class="popup_emailItineraryStatus" target="_new">
+							<img class="questionIcon" src="/assets/images/icon-question.gif" style="vertical-align:middle" alt="Status"/>
+						</a>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				
+					<tr>
+						<td>
+							
+							<input id="emailsSendStatus[0]1" name="emailsSendStatus[0]" title="Send Email 1" type="checkbox" value="true"/><input type="hidden" name="_emailsSendStatus[0]" value="on"/>
+						</td>
+						<td>
+							
+							<input id="emailsWithStatus0.email" name="emailsWithStatus[0].email" title="Enter email 1" type="text" value="BOBBYTABLES@GMAIL.COM" size="35" maxlength="100"/>
+						</td>
+						<td>
+							E-mail Sent
+						</td>
+					</tr>
+				
+					<tr>
+						<td>
+							
+							<input id="emailsSendStatus[1]1" name="emailsSendStatus[1]" title="Send Email 2" type="checkbox" value="true"/><input type="hidden" name="_emailsSendStatus[1]" value="on"/>
+						</td>
+						<td>
+							
+							<input id="emailsWithStatus1.email" name="emailsWithStatus[1].email" title="Enter email 2" type="text" value="" size="35" maxlength="100"/>
+						</td>
+						<td>
+							** none entered **
+						</td>
+					</tr>
+				
+					<tr>
+						<td>
+							
+							<input id="emailsSendStatus[2]1" name="emailsSendStatus[2]" title="Send Email 3" type="checkbox" value="true"/><input type="hidden" name="_emailsSendStatus[2]" value="on"/>
+						</td>
+						<td>
+							
+							<input id="emailsWithStatus2.email" name="emailsWithStatus[2].email" title="Enter email 3" type="text" value="" size="35" maxlength="100"/>
+						</td>
+						<td>
+							** none entered **
+						</td>
+					</tr>
+				
+					<tr>
+						<td>
+							
+							<input id="emailsSendStatus[3]1" name="emailsSendStatus[3]" title="Send Email 4" type="checkbox" value="true"/><input type="hidden" name="_emailsSendStatus[3]" value="on"/>
+						</td>
+						<td>
+							
+							<input id="emailsWithStatus3.email" name="emailsWithStatus[3].email" title="Enter email 4" type="text" value="" size="35" maxlength="100"/>
+						</td>
+						<td>
+							** none entered **
+						</td>
+					</tr>
+				
+					<tr><td colspan=3 style="border-bottom:0px none">
+					  <input id="submitButton" class="largeSubmitButtonWhite" type="submit" value="Send Itinerary via E-mail" title="Send Itinerary via E-mail">
+					  </td></tr>
+			</tbody>
+		</table>
+		</div>
+	</form>
+</div>
+
+<div class="whatsNext" style="width:750px">
+	<h4 class="aboveSubmitButtonText">What's Next?</h4>
+	
+	
+	<div style="float:left; margin-right: 10px;">
+		<a title="Book a Flight" class="mediumSubmitButton" href="/flight/search-flight.html?ss=0&amp;disc=XXXXXXXX">
+			Book a Flight
+		</a>
+	</div>
+	<div style="float:left">
+		<a title="Retrieve Another Reservation" class="largestSubmitButtonWhite" href="/flight/retrieve-air-reservation.html?ss=0&amp;disc=XXXXXXXX">
+			Retrieve Another Reservation
+		</a>
+	</div>
+</div>
+
+
+
+	
+
+
+
+
+
+				</div>
+			</div>
+
+			
+
+			
+				<div id="right_nav">
+					<img src="/assets/images/account-bar-top.gif" alt="Account Bar"/><div id="profile">
+
+	
+	
+		<h6 class="mySouthwestLogin">
+			MySouthwest Login<span> (optional)</span>
+		</h6>
+		
+		<div class="account_bar_content1">
+			<div class="content">
+				<form id="loginForm" action="https://www.southwest.com/flight/login.html" method="POST">
+					
+					<input id="memberNumber" name="memberNumber" style="height: 20px;" title="Enter account number" tabindex="100" type="text" value=""/>
+					
+					<input id="password" name="password" style="height: 20px;" title="Enter Password" tabindex="101" type="password" value="" size="18" maxlength="14" autocomplete="off"/>
+					<input type="text" id="defaultPassword" style="display:none; height: 20px;" size="18" maxlength="14" class="" title="Enter Password" tabindex="102"/>
+					<input type="hidden" name="ss" value="0"/>
+<input type="hidden" name="disc" value="XXXXXXXX"/>
+
+					<a title="Forgot Password?" class="loginLink" href="/cgi-bin/updateTravelerAccount?action=buildforgotpasswordform">
+					Forgot Password?
+					</a>
+					<input id="loginButton" type="image" alt="Go" title="Go" src="/assets/images/btn-login.gif" name="loginButton" tabindex="103"/>
+
+					<div class="rememberMeDiv">
+						
+						<input id="rememberMe" name="rememberMe" title="Remember Me" tabindex="104" type="checkbox" value="true"/><input type="hidden" name="_rememberMe" value="on"/>
+						<label class="rememberMeLabel" for="rememberMe">Remember Me</label>
+					</div>
+					<input type="hidden" name="returnUrl" value="http://www.southwest.com/flight/view-reservation.html" />
+				</form>
+				<form action="https://www.southwest.com/cgi-bin/createTravelerAccount" method="POST">
+					<input type="hidden" name="action" value="buildAccountInfoForm"/>
+					<input type="hidden" name="ss" value="0"/>
+<input type="hidden" name="disc" value="XXXXXXXX"/>
+
+					<input class="createAccountLink" title="Create an Account" type="submit" value="Create an Account"/>
+				</form>
+			</div>
+		</div>
+	
+	
+
+<div class="account_bar_content" style="padding-top: 5px; padding-bottom: 4px;">
+	
+		<div class="account_bar_content_box">
+			<h6>Helpful Links</h6>
+<div class="content">
+	<ul>
+		<li><a title="Bags Fly Free" href="/landing/bags_flyfree.html">Bags Fly Free</a></li>
+		<li><a title="Checkin & Boarding Procedures" href="/travel_center/checkin.html">Checkin & Boarding Procedures</a></li>
+		<li><a title="Inflight Amenities" href="/travel_center/inflight.html">Inflight Amenities</a></li>
+		<li><a title="Suggested Airport Arrival Times" href="/travel_center/suggested_arrival.html">Suggested Airport Arrival Times</a></li>
+	</ul>
+</div>
+
+		</div>
+
+		
+		
+		
+		
+<div class="account_bar_content_box">
+	<h6>Travel Guide</h6>
+	<div class="content">
+		<div class="travelGuideCity">Tulsa, OK</div>
+		<ul>
+			<li><a title="Explore Destination" href="http://travel.southwest.com/travel/destinationDetails.html?cityName=Tulsa">Explore Destination</a></li>
+			<li><a title="Weather Forecast" href="http://travel.southwest.com/travel/weatherDetails.html?cityName=Tulsa">Weather Forecast</a></li>
+			<li><a title="Airport Information" href="http://travel.southwest.com/travel/airportDetails.html?airportCode=TUL&cityName=Tulsa">Airport Information</a></li>
+			<li><a title="Things to Do" href="http://travel.southwest.com/travel/thingsToDoIndex.html?cityName=Tulsa">Things to Do</a></li>
+		</ul>
+	</div>
+</div>
+		
+		<div class="account_bar_content_box">
+			<h6>Southwest Policies</h6>
+<div class="content">
+	<ul>
+		<li><a title="Baggage Policies" href="/travel_center/baggage.html">Baggage Policies</a></li>
+		<li><a title="Unaccompanied Minors" href="/travel_center/childtip.html">Unaccompanied Minors</a></li>
+		<li><a title="Disability Related Assistance" href="/travel_center/disability.html">Disability Related Assistance</a></li>
+		<li><a title="More" href="/travel_center/travel_center_policies.html">More</a></li>
+	</ul>
+</div>
+
+
+		</div>
+
+		<div class="account_bar_content_box">
+			<h6>Did You Know?</h6>
+<div class="content">
+	<p class="text">
+		With our open seating, you select any seat you want. Early check-in...<br />
+		<a title="Learn More" href="">Learn More</a>
+	</p>
+</div>
+		</div>
+
+	
+</div>
+</div>
+
+					<div id="ad">
+						
+	
+
+					</div>
+				</div>
+			
+		</div>
+
+		<div id="sw_footer">
+			
+				<div id="footer_otherServices">
+	<div id="footer_otherServicesVacations">
+	<a title="Vacation Packages" href="/jp/vacations.html" target="_blank">Vacation
+	Packages</a>
+	</div>
+	<div id="footer_otherServicesSwaBiz">
+	<a title="Business Travel" href="/jp/swabiz.html" target="_blank">Business
+	Travel</a>
+	</div>
+	<div id="footer_otherServicesCargo">
+	<a title="Ship Packages" href="/jp/swacargo.html" target="_blank">Ship Packages</a>
+	</div>
+</div>
+
+<div id="footer_navigation" class="gray1_text">
+
+	<ul>
+		<li><a title="Home" href="/?int=FOOTSITE_HOME" >Home</a>|</li>
+		<li><a title="Air" href="/cgi-bin/buildItinerary2?int=FOOTSITE_AIR" >Air</a>|</li>
+		<li><a title="Cars" href="/cgi-bin/carTab?int=FOOTSITE_CARS" >Cars</a>|</li>
+		<li><a title="Hotels" href="/cgi-bin/hotelTab?int=FOOTSITE_HOTELS" >Hotels</a>|</li>
+		<li><a title="Cruises" href="http://go.southwest.travelpn.com/ecruise/CruiseSearchForm.do?int=FOOTSITE_CRUISES">Cruises</a>|</li>
+		<li><a title="Travel Tools" href="/travel_center/travel_center.html?int=FOOTSITE_TOOLS">Travel Tools</a>|</li>
+		<li><a title="Rapid Rewards" href="/rapid_rewards?int=FOOTSITE_RR">Rapid Rewards</a></li>
+	</ul>
+
+	<ul>
+		<li><a title="Travel Guide" href="http://travel.southwest.com/travel/exploreTravel.html?int=FOOTSITE_TVLGUIDE">Travel Guide</a>|</li>
+		<li><a title="Group Travel" href="/programs_services/groups/groups.html?int=FOOTSITE_GROUP">Group Travel</a>|</li>
+		<li><a title="Shuttle Services" href="http://southwest.iseatz.com?int=FOOTSITE_SHUTTLE">Shuttle Services</a>|</li>
+		<li><a title="Where We Fly" href="/travel_center/routemap_dyn.html?int=FOOTSITE_WHERE">Where We Fly</a>|</li>
+		<li><a title="About Southwest" href="/about_swa?int=FOOTSITE_ABOUT">About Southwest</a></li>
+	</ul>
+
+	<ul>
+		<li><a title="Careers" href="/careers?int=FOOTSITE_CAREER">Careers</a>|</li>
+		<li><a title="Our Blog" href="/jp/blog.html?int=FOOTSITE_BLOG" target="_blank">Our Blog</a>|</li>
+		<li><a title="Contact Us" href="/about_swa/luvbook.html?int=FOOTSITE_CONTACT">Contact Us</a>|</li>
+		<li><a title="Help" href="/help/help_index.html?int=FOOTSITE_HELP">Help</a>|</li>
+		<li><a title="Site Map" href="/help/site_map.html?int=FOOTSITE_SITEMAP">Site Map</a></li>
+	</ul>
+
+</div>
+
+<div class="std_body4" id="footer_copyright">
+	Use of the Southwest websites and our
+	Company Information constitutes acceptance of our<br />
+	<a title="Terms and Conditions" href="/about_swa/terms_and_con.html?int=FOOTSITE_TERMS">Terms
+	and Conditions</a>. <a title="Privacy Policy"
+		href="/travel_center/privacy_policy.html?int=FOOTSITE_POLICY">Privacy
+	Policy</a>. &#169;2008 Southwest Airlines Co. All Rights Reserved
+</div>
+			
+			
+		</div>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+	document.write('<iframe src="/assets/v10397/blank.html" scrolling="no" width="0" height="0" frameborder="0" id="iframetop"></iframe>');
+</script>
+<div id="destination_flyout" class="destination_flyout" style="display: none"></div>
+
+<script type="text/javascript" src="/assets/v10397/scripts/global.min.js"></script>
+<script type="text/javascript">
+	// these script variables need to be in this location to ensure that the paths are updated properly 
+	var uiDatepickerJavascriptLocation="/assets/v10397/scripts/ui.datepicker.min.js";
+	var departReturnDatepickerJavascriptLocation="/assets/v10397/scripts/departAndReturnDatePickers.min.js";
+	var tablesorterJavascriptLocation="/assets/v10397/scripts/jquery.tablesorter.min.js";
+	var destFlyoutsJavascriptLocation="/assets/v10397/scripts/destination_flyouts.min.js";
+	var destFlyoutsFilterJavascriptLocation="/assets/v10397/scripts/destination_flyouts_filter.min.js";
+	var validRoutesJavascriptLocation="/flight/validRoutes.js";
+	var upsellJavascriptLocation="/assets/v10397/scripts/upsell.min.js";
+</script>
+
+		<script type="text/javascript" src="/assets/v10397/scripts/ics.min.js"></script>
+		<script type="text/javascript" src="/assets/v10397/scripts/priceItineraryPopups.min.js"></script>
+	
+<div id="scripts">
+	<script type="text/javascript" src="/assets/v10397/scripts/analytics/header.min.js"></script>
+	
+	<script type="text/javascript" src="/assets/v10397/scripts/analytics/airRetrieveViewItineraryDetailsDefs.min.js"></script>
+
+	<script type="text/javascript">
+		var analyticsSendJavascriptLoaded=false;
+		$(document).ready(function() {
+			if (!analyticsSendJavascriptLoaded) {
+				analyticsSendJavascriptLoaded=true;
+				$.getScript("/assets/v10397/scripts/analytics/send.min.js");
+			}
+		});
+	</script>
+</div>
+
+
+</body>
+</html>
